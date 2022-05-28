@@ -29,12 +29,17 @@ import javax.swing.filechooser.FileFilter;
 public class JPEGFileFilter extends FileFilter {
 
     /**
-     * Determines whether or not to accept a file.
+     * Determines whether or not to accept a file. Directories (folders) are 
+     * accepted because they might contain files that would be accepted, or 
+     * their subdirectories might.
      * @param file The file to accept or reject.
      * @return True if the file has the *.jpg extension, false otherwise.
      */
     @Override
     public boolean accept(File file) {
+        if (file.isDirectory()) {
+            return true;
+        }
         String fileName = file.getName().toLowerCase();
         return fileName.endsWith(".jpg");
     }
