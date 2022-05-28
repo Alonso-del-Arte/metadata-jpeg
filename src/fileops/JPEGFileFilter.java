@@ -17,7 +17,7 @@ public class JPEGFileFilter extends FileFilter {
     // STUB TO FAIL THE FIRST TEST
     @Override
     public boolean accept(File file) {
-        return false;
+        return true;
     }
 
     // STUB TO FAIL THE FIRST TEST
