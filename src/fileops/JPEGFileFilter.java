@@ -35,13 +35,19 @@ public class JPEGFileFilter extends FileFilter {
      */
     @Override
     public boolean accept(File file) {
-        return file.getName().endsWith(".jpg");
+        String fileName = file.getName().toLowerCase();
+        return fileName.endsWith(".jpg");
     }
 
-    // STUB TO FAIL THE FIRST TEST
+    /**
+     * Gives the description of files that will be accepted. It almost goes 
+     * without saying that directories will be accepted.
+     * @return The words "Joint Photographic Experts Group (JPEG) images 
+     * (*.jpg)".
+     */
     @Override
     public String getDescription() {
-        return "Sorry, not implemented yet";
+        return "Joint Photographic Experts Group (JPEG) images (*.jpg)";
     }
     
 }
