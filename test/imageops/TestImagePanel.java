@@ -20,6 +20,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Polygon;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -31,6 +33,8 @@ import javax.swing.WindowConstants;
  * @author Alonso del Arte
  */
 public final class TestImagePanel extends JPanel {
+    
+    private static final Random RANDOM = new Random();
     
     /**
      * The background color, blue. RGB: 0000FF.
@@ -56,6 +60,11 @@ public final class TestImagePanel extends JPanel {
     
     private JFrame frame;
     
+    private void paintSun(Graphics g, int x, int y, int size) {
+        g.setColor(Color.YELLOW);
+        g.fillOval(x, y, size, size);
+    }
+    
     private void paintSky(Graphics g, int top, int horizon) {
         Color currColor = BACKGROUND_COLOR;
         for (int i = top; i < horizon; i++) {
@@ -63,9 +72,40 @@ public final class TestImagePanel extends JPanel {
             g.drawLine(0, i, PANEL_WIDTH, i);
             currColor = new Color(i, i, 255);
         }
+        int size = 4 * horizon / 3;
+        int x = 3 * PANEL_HEIGHT / 4;
+        int y = horizon - size + (horizon / 2);
+        this.paintSun(g, x, y, size);
     }
     
-    private void paintGround(Graphics g, int horizon, int bottom) {
+    private void paintTrees(Graphics g, int horizon, int bottom) {
+        int area = bottom - horizon;
+        int height = area / 10;
+        int width = PANEL_WIDTH / 40;
+        int halfWidth = width / 2;
+        int[] xPoints = new int[3];
+        int[] yPoints = new int[3];
+        Polygon triangle;
+        int alpha;
+        Color gray;
+        for (int x = 0; x < PANEL_WIDTH; x += width) {
+            xPoints[0] = x;
+            xPoints[1] = x + halfWidth;
+            xPoints[2] = x + width;
+            for (int y = horizon; y < bottom; y += height) {
+                yPoints[0] = y + height;
+                yPoints[1] = y;
+                yPoints[2] = yPoints[0];
+                triangle = new Polygon(xPoints, yPoints, 3);
+                alpha = 50 + RANDOM.nextInt(40);
+                gray = new Color(128, 128, 128, alpha);
+                g.setColor(gray);
+                g.fillPolygon(triangle);
+            }
+        }
+    }
+    
+    private void paintLand(Graphics g, int horizon, int bottom) {
         Color currColor = MEDIUM_GREEN;
         int red = currColor.getRed();
         int green = currColor.getGreen();
@@ -78,6 +118,7 @@ public final class TestImagePanel extends JPanel {
             blue++;
             currColor = new Color(red, green, blue);
         }
+        this.paintTrees(g, horizon, bottom);
     }
     
     @Override
@@ -85,7 +126,7 @@ public final class TestImagePanel extends JPanel {
         int oneThirdHeight = PANEL_HEIGHT / 3;
         this.paintSky(g, 0, oneThirdHeight);
         int twoThirdsHeight = 2 * oneThirdHeight;
-        this.paintGround(g, oneThirdHeight, PANEL_HEIGHT);
+        this.paintLand(g, oneThirdHeight, PANEL_HEIGHT);
         g.setColor(Color.BLACK);
         Font font = new Font(g.getFont().getFontName(), Font.PLAIN, 192);
         g.setFont(font);
