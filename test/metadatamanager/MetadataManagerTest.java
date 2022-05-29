@@ -101,6 +101,57 @@ public class MetadataManagerTest {
     }
     
     /**
+     * Another test of the openFile procedure, of the MetadataManager class. 
+     * An image file that is not JPEG file should be rejected. This test creates 
+     * an empty GIF file because a later test will require files to exist. The 
+     * file is deleted before concluding the test.
+     * @throws IOException
+     */
+    @Test
+    public void testOpenFileRejectsNonJPEGFile() throws IOException {
+        String filename = TEMP_DIR_PATH + File.separatorChar + "image.gif";
+        File file = new File(filename);
+        file.createNewFile();
+        MetadataManager manager = new MetadataManager();
+        try {
+            manager.openFile(file);
+            System.out.println("Somehow opened " + file.getAbsolutePath() 
+                    + " even though it's not a JPEG");
+        } catch (IllegalArgumentException iae) {
+            System.out.println("Trying to open " + file.getAbsolutePath() 
+                    + " correctly caused IllegalArgumentException");
+            System.out.println("\"" + iae.getMessage() + "\"");
+        } catch (RuntimeException re) {
+            String msg = re.getClass().getName() 
+                    + " is the wrong exception for trying to open " 
+                    + file.getAbsolutePath();
+            fail(msg);
+        } finally {
+            file.delete();
+        }
+    }
+    
+    /**
+     * Another test of the openFile procedure, of the MetadataManager class. 
+     * An image file that is not JPEG file should be rejected. This test creates 
+     * an empty GIF file because a later test will require files to exist.
+     * @throws FileNotFoundException
+     */
+    @Test(expected = FileNotFoundException.class)
+    public void testOpenFileRejectsNonExistentFile() 
+            throws FileNotFoundException {
+        String filename = TEMP_DIR_PATH + File.separatorChar 
+                + "nonexistent.jpg";
+        File file = new File(filename);
+        String msg = file.getAbsolutePath() + " should not exist";
+        assert !file.exists() : msg;
+        MetadataManager manager = new MetadataManager();
+        manager.openFile(file);
+        System.out.println("Somehow opened " + file.getAbsolutePath() 
+                + " even though it doesn't actually exist");
+    }
+    
+    /**
      * Test of the openFile procedure, of the MetadataManager class.
      * @throws FileNotFoundException
      */

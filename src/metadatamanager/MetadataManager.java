@@ -16,16 +16,21 @@
  */
 package metadatamanager;
 
+import fileops.JPEGFileFilter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.imageio.ImageIO;
+import javax.swing.filechooser.FileFilter;
 
 /**
  *
  * @author Alonso del Arte
  */
 public class MetadataManager {
+    
+    private static final FileFilter FILTER = new JPEGFileFilter();
     
     private File currentlyOpen = null;
     
@@ -34,7 +39,8 @@ public class MetadataManager {
      * @param file The file to open.
      * @throws IllegalArgumentException If <code>file</code> is a directory.
      * @throws NullPointerException If <code>file</code> is null.
-     * @throws FileNotFoundException If there's a problem opening the file.
+     * @throws FileNotFoundException If there's a problem opening the file or if 
+     * the file does not exist.
      */
     void openFile(File file) throws FileNotFoundException {
         if (file == null) {
@@ -46,7 +52,12 @@ public class MetadataManager {
                     + " is a directory, not a file";
             throw new IllegalArgumentException(excMsg);
         }
-        this.currentlyOpen = file;
+        if (!FILTER.accept(file)) {
+            String excMsg = file.getName() + " is not a JPEG file";
+            throw new IllegalArgumentException(excMsg);
+        }
+        String excMsg = file.getAbsolutePath() + " not found ???";
+        throw new FileNotFoundException(excMsg);
     }
     
     // TODO: Write tests for this
