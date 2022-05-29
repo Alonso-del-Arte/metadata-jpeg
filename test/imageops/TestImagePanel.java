@@ -125,7 +125,6 @@ public final class TestImagePanel extends JPanel {
     public void paintComponent(Graphics g) {
         int oneThirdHeight = PANEL_HEIGHT / 3;
         this.paintSky(g, 0, oneThirdHeight);
-        int twoThirdsHeight = 2 * oneThirdHeight;
         this.paintLand(g, oneThirdHeight, PANEL_HEIGHT);
         g.setColor(Color.BLACK);
         Font font = new Font(g.getFont().getFontName(), Font.PLAIN, 192);
@@ -134,11 +133,11 @@ public final class TestImagePanel extends JPanel {
     }
     
     private void showPanel() {
-        frame = new JFrame("Test Image");
-        frame.add(this);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+        this.frame = new JFrame("Test Image");
+        this.frame.add(this);
+        this.frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.frame.pack();
+        this.frame.setVisible(true);
     }
     
     /**
@@ -146,7 +145,7 @@ public final class TestImagePanel extends JPanel {
      * call this procedure in test tear down.
      */
     public void closePanel() {
-        frame.dispose();
+        this.frame.dispose();
     }
     
     /**
@@ -157,10 +156,6 @@ public final class TestImagePanel extends JPanel {
         Dimension prefDim = new Dimension(PANEL_WIDTH, PANEL_HEIGHT);
         this.setPreferredSize(prefDim);
         showPanel();
-    }
-    
-    public static void main(String[] args) {
-        TestImagePanel panel = new TestImagePanel();
     }
     
 }
