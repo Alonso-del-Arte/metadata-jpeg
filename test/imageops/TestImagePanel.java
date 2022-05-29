@@ -97,7 +97,7 @@ public final class TestImagePanel extends JPanel {
                 yPoints[1] = y;
                 yPoints[2] = yPoints[0];
                 triangle = new Polygon(xPoints, yPoints, 3);
-                alpha = 50 + RANDOM.nextInt(40);
+                alpha = 25 + RANDOM.nextInt(65);
                 gray = new Color(128, 128, 128, alpha);
                 g.setColor(gray);
                 g.fillPolygon(triangle);
