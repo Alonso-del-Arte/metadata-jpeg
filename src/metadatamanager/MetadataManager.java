@@ -29,13 +29,29 @@ public class MetadataManager {
     
     private File currentlyOpen = null;
     
+    /**
+     * Opens a file.
+     * @param file The file to open.
+     * @throws IllegalArgumentException If <code>file</code> is a directory.
+     * @throws NullPointerException If <code>file</code> is null.
+     * @throws FileNotFoundException If there's a problem opening the file.
+     */
     void openFile(File file) throws FileNotFoundException {
+        if (file == null) {
+            String excMsg = "file must not be null";
+            throw new NullPointerException(excMsg);
+        }
+        if (file.isDirectory()) {
+            String excMsg = file.getAbsolutePath() 
+                    + " is a directory, not a file";
+            throw new IllegalArgumentException(excMsg);
+        }
         this.currentlyOpen = file;
     }
     
     // TODO: Write tests for this
     File getFile() {
-        return new File("nonexistent.jpg");
+        return null;
     }
     
     void saveFile() {

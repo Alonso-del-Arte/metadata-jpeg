@@ -16,8 +16,15 @@
  */
 package metadatamanager;
 
+import imageops.TestImagePanel;
+
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Random;
+import javax.imageio.ImageIO;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -35,11 +42,31 @@ public class MetadataManagerTest {
     
     private static final File TEMP_DIR = new File(TEMP_DIR_PATH);
     
+    private static File TEST_FILE;
+    
+    private static final Random RANDOM = new Random();
+    
+    private static final TestImagePanel TEST_IMAGE = new TestImagePanel();
+    
+    @BeforeClass
+    public static void setUpClass() throws IOException {
+        BufferedImage image = new BufferedImage(TestImagePanel.PANEL_WIDTH, 
+                TestImagePanel.PANEL_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        Graphics g = image.createGraphics();
+        TEST_IMAGE.paint(g);
+        String filename = TEMP_DIR_PATH + File.separatorChar + "TestImage" 
+                + RANDOM.nextInt() + ".jpg";
+        TEST_FILE = new File(filename);
+        ImageIO.write(image, "JPG", TEST_FILE);
+        System.out.println("Successfully wrote " + TEST_FILE.getAbsolutePath());
+    }
+    
     /**
-     * Another test of the getFile function, of the MetadataManager class.
+     * Another test of the getFile function, of the MetadataManager class. When 
+     * the program is first opened, getFile() should return null.
      */
     @Test
-    public void testGetFileAtBeginning() {
+    public void testGetFileAtTheBeginning() {
         MetadataManager manager = new MetadataManager();
         File file = manager.getFile();
         String msg = "No file open at first, getFile() should return null";
@@ -47,8 +74,35 @@ public class MetadataManagerTest {
     }
     
     /**
-     * Test of openFile method, of class MetadataManager.
+     * Another test of the openFile procedure, of the MetadataManager class. 
+     * Null file should be rejected.
      * @throws java.io.FileNotFoundException
+     */
+    @Test(expected = NullPointerException.class)
+    public void testOpenFileRejectsNull() throws FileNotFoundException {
+        MetadataManager manager = new MetadataManager();
+        manager.openFile(null);
+        System.out.println("Somehow opened null file");
+    }
+    
+    /**
+     * Another test of the openFile procedure, of the MetadataManager class. 
+     * A directory (folder) should be rejected.
+     * @throws java.io.FileNotFoundException
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testOpenFileRejectsDirectory() throws FileNotFoundException {
+        String dirPathName = System.getProperty("user.dir");
+        File dir = new File(dirPathName);
+        MetadataManager manager = new MetadataManager();
+        manager.openFile(dir);
+        System.out.println("Somehow opened " + dir.getAbsolutePath() 
+                + " as if it were a file");
+    }
+    
+    /**
+     * Test of the openFile procedure, of the MetadataManager class.
+     * @throws FileNotFoundException
      */
 //    @Test
     public void testOpenFile() throws FileNotFoundException {
@@ -108,6 +162,18 @@ public class MetadataManagerTest {
         MetadataManager.main(args);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+        TEST_IMAGE.closePanel();
+        if (TEST_FILE.delete()) {
+            System.out.println("Successfully deleted " 
+                    + TEST_FILE.getAbsolutePath());
+        } else {
+            String excMsg = "Unable to delete " + TEST_FILE.getAbsolutePath();
+            throw new RuntimeException(excMsg);
+        }
     }
     
 }
