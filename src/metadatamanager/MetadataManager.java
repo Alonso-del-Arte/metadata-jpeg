@@ -33,6 +33,15 @@ public class MetadataManager {
         this.currentlyOpen = file;
     }
     
+    // TODO: Write tests for this
+    File getFile() {
+        return new File("nonexistent.jpg");
+    }
+    
+    void saveFile() {
+        //
+    }
+    
     void closeFile() {
 //        this.currentlyOpen = null;
     }
