@@ -1,6 +1,6 @@
-I intend to open this project to Hacktoberfest 2023.
+I might open this project to Hacktoberfest 2025.
 
-# Guidelines for Hacktoberfest 2023 Contributors
+# Guidelines for Hacktoberfest 2025 Contributors
 
 I will definitely consider pull requests associated with an issue and maybe consider pull requests associated with a TODO (considered an Action Item in NetBeans).
 
