@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Alonso del Arte
+ * Copyright (C) 2024 Alonso del Arte
  *
  * This program is free software: you can redistribute it and/or modify it under 
  * the terms of the GNU General Public License as published by the Free Software 
@@ -17,6 +17,8 @@
 package metadatamanager;
 
 import imageops.TestImagePanel;
+
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -76,28 +78,34 @@ public class MetadataManagerTest {
     /**
      * Another test of the openFile procedure, of the MetadataManager class. 
      * Null file should be rejected.
-     * @throws java.io.FileNotFoundException
      */
     @Test(expected = NullPointerException.class)
-    public void testOpenFileRejectsNull() throws FileNotFoundException {
+    public void testOpenFileRejectsNull() {
         MetadataManager manager = new MetadataManager();
-        manager.openFile(null);
-        System.out.println("Somehow opened null file");
+        try {
+            manager.openFile(null);
+            System.out.println("Somehow opened null file");
+        } catch (FileNotFoundException fnfe) {
+            throw new RuntimeException(fnfe);
+        }
     }
     
     /**
      * Another test of the openFile procedure, of the MetadataManager class. 
      * A directory (folder) should be rejected.
-     * @throws java.io.FileNotFoundException
      */
     @Test(expected = IllegalArgumentException.class)
-    public void testOpenFileRejectsDirectory() throws FileNotFoundException {
+    public void testOpenFileRejectsDirectory() {
         String dirPathName = System.getProperty("user.dir");
         File dir = new File(dirPathName);
         MetadataManager manager = new MetadataManager();
-        manager.openFile(dir);
-        System.out.println("Somehow opened " + dir.getAbsolutePath() 
-                + " as if it were a file");
+        try {
+            manager.openFile(dir);
+            System.out.println("Somehow opened " + dir.getAbsolutePath() 
+                    + " as if it were a file");
+        } catch (FileNotFoundException fnfe) {
+            throw new RuntimeException(fnfe);
+        }
     }
     
     /**
@@ -105,7 +113,8 @@ public class MetadataManagerTest {
      * An image file that is not JPEG file should be rejected. This test creates 
      * an empty GIF file because a later test will require files to exist. The 
      * file is deleted before concluding the test.
-     * @throws IOException
+     * @throws IOException If a problem occurs trying to create an empty GIF 
+     * file for this test.
      */
     @Test
     public void testOpenFileRejectsNonJPEGFile() throws IOException {
@@ -135,7 +144,10 @@ public class MetadataManagerTest {
      * Another test of the openFile procedure, of the MetadataManager class. 
      * An image file that is not JPEG file should be rejected. This test creates 
      * an empty GIF file because a later test will require files to exist.
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException This one should always occur, but also it 
+     * should be caught and reported by the test runner. If it doesn't occur, 
+     * check to make sure java.io.tmpdir does not have a file called 
+     * nonexistent.jpg.
      */
     @Test(expected = FileNotFoundException.class)
     public void testOpenFileRejectsNonExistentFile() 
@@ -153,30 +165,33 @@ public class MetadataManagerTest {
     
     /**
      * Test of the openFile procedure, of the MetadataManager class.
-     * @throws FileNotFoundException
      */
-//    @Test
-    public void testOpenFile() throws FileNotFoundException {
+    @Test
+    public void testOpenFile() {
         System.out.println("openFile");
-        File file = null;
-        MetadataManager instance = new MetadataManager();
-        instance.openFile(file);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        MetadataManager manager = new MetadataManager();
+        try {
+            manager.openFile(TEST_FILE);
+        } catch (FileNotFoundException fnfe) {
+            String errMsg = "FileNotFoundException shouldn't have occurred for " 
+                    + TEST_FILE.getAbsolutePath();
+            throw new AssertionError(errMsg, fnfe);
+        }
     }
 
     /**
      * Test of the getFile function, of the MetadataManager class.
+     * @throws java.io.FileNotFoundException If the file is not found. But that 
+     * shouldn't happen in this context, the test file should have been created 
+     * by the test class set up.
      */
-//    @Test
-    public void testGetFile() {
+    @Test
+    public void testGetFile() throws FileNotFoundException {
         System.out.println("getFile");
-        MetadataManager instance = new MetadataManager();
-        File expResult = null;
-        File result = instance.getFile();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        MetadataManager manager = new MetadataManager();
+        manager.openFile(TEST_FILE);
+        File actual = manager.getFile();
+        assertEquals(TEST_FILE, actual);
     }
 
     /**
@@ -192,15 +207,20 @@ public class MetadataManagerTest {
     }
 
     /**
-     * Test of closeFile method, of class MetadataManager.
+     * Test of the closeFile procedure, of the MetadataManager class.
+     * @throws java.io.FileNotFoundException If the file is not found. But that 
+     * shouldn't happen in this context, the test file should have been created 
+     * by the test class set up.
      */
-//    @Test
-    public void testCloseFile() {
+    @Test
+    public void testCloseFile() throws FileNotFoundException {
         System.out.println("closeFile");
-        MetadataManager instance = new MetadataManager();
-        instance.closeFile();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        MetadataManager manager = new MetadataManager();
+        manager.openFile(TEST_FILE);
+        manager.closeFile();
+        File file = manager.getFile();
+        String msg = "After closing the file, getFile( ) should return null";
+        assert file == null : msg;
     }
 
     /**
