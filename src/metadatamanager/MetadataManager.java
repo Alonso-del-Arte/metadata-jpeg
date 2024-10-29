@@ -37,7 +37,8 @@ public class MetadataManager {
     /**
      * Opens a file.
      * @param file The file to open.
-     * @throws IllegalArgumentException If <code>file</code> is a directory.
+     * @throws IllegalArgumentException If <code>file</code> is a directory or 
+     * if it's not recognized as a JPEG file.
      * @throws NullPointerException If <code>file</code> is null.
      * @throws FileNotFoundException If there's a problem opening the file or if 
      * the file does not exist.
@@ -56,13 +57,20 @@ public class MetadataManager {
             String excMsg = file.getName() + " is not a JPEG file";
             throw new IllegalArgumentException(excMsg);
         }
-        String excMsg = file.getAbsolutePath() + " not found ???";
-        throw new FileNotFoundException(excMsg);
+        if (!file.exists()) {
+            String excMsg = file.getAbsolutePath() + " not found";
+            throw new FileNotFoundException(excMsg);
+        }
+        this.currentlyOpen = file;
     }
     
-    // TODO: Write tests for this
+    /**
+     * Retrieves the currently open file. This package private function exists 
+     * mostly, or perhaps entirely, for the sake of testing.
+     * @return A {@code File} object for the currently open file.
+     */
     File getFile() {
-        return null;
+        return this.currentlyOpen;
     }
     
     void saveFile() {
@@ -70,7 +78,7 @@ public class MetadataManager {
     }
     
     void closeFile() {
-//        this.currentlyOpen = null;
+        this.currentlyOpen = null;
     }
 
     /**
